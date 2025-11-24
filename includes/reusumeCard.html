@@ -1,0 +1,58 @@
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body></body>
+
+</html>
+
+<div id="resumeCard-wrapper" class="p-2">
+    <!-- Set container to 'relative' so 'absolute' children are positioned relative to it -->
+    <div id="resumeCard" class="bg-white rounded-lg shadow flex flex-col max-w-sm overflow-hidden hover:shadow-lg hover:scale-105 transition cursor-pointer relative">
+        
+        <!-- 1. PDF Preview Image -->
+        <img 
+            src="https://placehold.co/400x250/E5E7EB/4B5563?text=PDF+Page+1+Preview" 
+            alt="Resume Document Preview" 
+            class="w-full h-40 object-cover rounded-t-lg" 
+        />
+        
+        <!-- 2. Score Badge (Absolute Positioned Flag) -->
+        <!-- Positioned absolutely at the top right, with contrasting style -->
+        <div id="score" class="absolute top-3 right-3">
+            <span class="px-3 py-1 bg-white text-green-700 text-sm font-bold rounded shadow-md border-2 border-green-400">
+                Score: 90%
+            </span>
+        </div>
+        
+        <!-- 3. Text Content Area -->
+        <div class="p-4 flex flex-col flex-grow">
+            <!-- Interviewer Name and ID (Slightly shallow) -->
+            <h3 class="font-bold text-lg mb-1">
+                Interviewer Name Placeholder
+                <span class="text-sm font-normal text-gray-500 block">ID: [Unique ID Placeholder]</span>
+            </h3>
+            
+            <!-- AI Overview Summary -->
+            <p class="text-sm text-gray-700 line-clamp-3 mb-2">
+                the overview summary by ai... [AI generated content here]
+            </p>
+
+            <!-- Categories (Could contain multiple tags/categories) -->
+            <p class="text-xs text-gray-600">
+                Category 1 / Category 2 / Category 3
+            </p>
+
+            <!-- Placeholder for Button or extra space if needed -->
+            <div class="mt-4"></div>
+        </div>
+    </div>
+</div>
+
