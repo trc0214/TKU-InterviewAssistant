@@ -94,8 +94,12 @@ if (typeof window.appSettings !== 'undefined') {
         const loadSampleBtn = document.getElementById('load-sample');
         if (loadSampleBtn) {
             loadSampleBtn.addEventListener('click', () => {
-                console.log('Load sample data clicked');
-                // Your sample data loading logic
+                // Append sample data (do not replace existing cards)
+                if (window.appendSampleData) {
+                    window.appendSampleData();
+                } else {
+                    console.log('Load sample data clicked (append function not available)');
+                }
             });
         }
 
