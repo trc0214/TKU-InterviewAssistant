@@ -53,13 +53,27 @@
                 const el = node.querySelector('[data-field="score"]');
                 if (!el) return;
 
-                // remove common color classes we may have applied previously (but keep bg-white removal out so background stays white)
-                const remove = ['bg-green-100','bg-green-200','bg-green-500','bg-yellow-100','bg-orange-500','bg-red-100','bg-red-500','text-green-700','text-yellow-700','text-red-700','text-gray-700','border-green-400','border-yellow-400','border-red-400','border-gray-300'];
-                el.classList.remove(...remove);
+                // remove any prior color/border/text/bg classes (but keep `bg-white`)
+                try {
+                    const toRemove = Array.from(el.classList).filter(c => (/^(bg-|text-|border-)/).test(c) && c !== 'bg-white');
+                    if (toRemove.length) el.classList.remove(...toRemove);
+                } catch (e) { /* ignore */ }
 
+                // Determine numeric score: prefer dataObj.score, fallback to parsing badge text
+                let scoreValue = null;
                 const scoreRaw = dataObj && dataObj.score;
-                const parsed = scoreRaw == null ? null : (typeof scoreRaw === 'number' ? scoreRaw : parseFloat(String(scoreRaw).replace('%', '').trim()));
-                const scoreValue = (parsed == null || isNaN(parsed)) ? null : Math.max(0, Math.min(100, Math.round(parsed)));
+                if (scoreRaw != null) {
+                    const parsed = (typeof scoreRaw === 'number') ? scoreRaw : parseFloat(String(scoreRaw).replace('%', '').trim());
+                    if (!isNaN(parsed)) scoreValue = Math.max(0, Math.min(100, Math.round(parsed)));
+                }
+                if (scoreValue == null) {
+                    // try to extract a number from the badge text (e.g., "Score: 92%")
+                    const text = (el.textContent || '').match(/(\d{1,3})(?:\s*%|$)/);
+                    if (text && text[1]) {
+                        const parsed2 = parseInt(text[1], 10);
+                        if (!isNaN(parsed2)) scoreValue = Math.max(0, Math.min(100, parsed2));
+                    }
+                }
 
                 if (typeof window.getScoreStyle === 'function') {
                     const style = window.getScoreStyle(scoreValue == null ? 0 : scoreValue) || {};
@@ -67,27 +81,25 @@
                     el.classList.add('bg-white');
                     if (style.text) el.classList.add(style.text);
 
-                    // Prefer explicit border if provided. Otherwise derive a sensible border class
+                    // Prefer explicit border if provided. Otherwise derive a sensible border class from style.text
                     let borderClass = style.border;
                     if (!borderClass && style.text) {
-                        // derive from text color (e.g. text-green-700 -> border-green-400)
-                        const m = String(style.text).match(/^text-([a-z]+)(-(\d+))?$/);
+                        const m = String(style.text).match(/^text-([a-z]+)(?:-(\d+))?$/);
                         if (m) {
                             const color = m[1];
-                            const shade = m[3] ? parseInt(m[3], 10) : null;
+                            const shade = m[2] ? parseInt(m[2], 10) : null;
                             let newShade = 400;
                             if (shade) {
-                                if (shade >= 800) newShade = shade - 400;
-                                else if (shade >= 700) newShade = shade - 300;
-                                else if (shade >= 600) newShade = shade - 200;
+                                if (shade >= 800) newShade = Math.max(200, shade - 400);
+                                else if (shade >= 700) newShade = Math.max(200, shade - 300);
+                                else if (shade >= 600) newShade = Math.max(200, shade - 200);
                                 else newShade = 400;
                             }
                             borderClass = `border-${color}-${newShade}`;
                         }
                     }
                     if (!borderClass) borderClass = 'border-gray-300';
-                    el.classList.add(borderClass);
-                    el.classList.add('border-2');
+                    el.classList.add(borderClass, 'border-2');
                 } else {
                     // fallback thresholds
                     const thresholds = (window.appSettings && window.appSettings.scoreThresholds) || { excellent: 85, good: 70 };

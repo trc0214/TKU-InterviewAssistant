@@ -105,4 +105,23 @@
     };
 
     window.resumeStore = store;
+    // When settings change, re-render current view using values from the filter UI.
+    // This keeps the display in sync if sorting, itemsPerPage, or other settings change.
+    function _readFiltersFromDOM() {
+        const search = (document.getElementById('search') || {}).value || '';
+        const category = (document.getElementById('category') || {}).value || '';
+        const sort = (document.getElementById('sort') || {}).value || '';
+        return { search, category, sort };
+    }
+
+    if (typeof window !== 'undefined') {
+        window.addEventListener('settings-updated', () => {
+            try {
+                const f = _readFiltersFromDOM();
+                store.renderCurrent(f);
+            } catch (e) {
+                console.warn('resumeStore: failed to re-render after settings update', e);
+            }
+        });
+    }
 })();
