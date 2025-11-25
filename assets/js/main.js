@@ -178,6 +178,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Inject filter bar
     await loadInclude('includes/filterBar.html', '#filterbar-placeholder');
 
+    // Inject resume display area (keeps include-pattern consistent)
+    await loadInclude('includes/resumeDisplay.html', '#resume-placeholder');
+
     // Load header.js and resumeCard component after all HTML is loaded
     await loadScript('assets/js/components/header.js');
     await loadScript('assets/js/components/resumeCard.js');
@@ -192,5 +195,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     ];
 
     // Use data-driven creation when possible
-    loadResumeCards('includes/templates/resume-card.html', '#resume-container', sample);
+    await loadResumeCards('includes/templates/resume-card.html', '#resume-container', sample);
 });
