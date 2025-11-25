@@ -81,13 +81,6 @@
                 node.querySelectorAll && node.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
                 container.appendChild(node);
             }
-
-            // update summary if present
-            const summary = document.getElementById('summary');
-            if (summary) {
-                summary.textContent = `${list.length} / ${this.items.length} shown`;
-                summary.classList.remove('hidden');
-            }
         },
         // Utility: get all unique categories
         getCategories() {
