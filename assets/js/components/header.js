@@ -6,7 +6,8 @@ if (typeof window.appSettings !== 'undefined') {
     // Settings configuration
     window.appSettings = {
         itemsPerPage: 12,
-        defaultSort: 'score-desc',
+        // default sort: date-desc (newest uploaded first)
+        defaultSort: 'date-desc',
         scoreThresholds: {
             excellent: 85,
             good: 70

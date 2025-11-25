@@ -185,15 +185,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadScript('assets/js/components/header.js');
     await loadScript('assets/js/components/resumeCard.js');
 
+    // Load resume store and filter UI handlers
+    await loadScript('assets/js/components/resumeStore.js');
+    await loadScript('assets/js/components/filterBar.js');
+
     // Populate some sample resume cards into the display area
     // If you pass an array of objects, each object will be used to fill the template fields.
     const sample = [
-        { id: 'A001', name: 'Alice Chen', score: 92, overview: 'Experienced frontend engineer...', categories: ['Frontend', 'React'], image: 'https://placehold.co/400x250/E5E7EB/4B5563?text=Alice' },
-        { id: 'B002', name: 'Bob Lin', score: 78, overview: 'Data-focused analyst...', categories: ['Data', 'Python'], image: 'https://placehold.co/400x250/E5E7EB/4B5563?text=Bob' },
-        { id: 'C003', name: 'Carol Wu', score: 85, overview: 'Full-stack developer...', categories: ['Fullstack', 'Node'], image: 'https://placehold.co/400x250/E5E7EB/4B5563?text=Carol' },
-        { id: 'D004', name: 'David Ho', score: 67, overview: 'Junior QA engineer...', categories: ['QA'], image: 'https://placehold.co/400x250/E5E7EB/4B5563?text=David' }
+        { id: 'A001', name: 'Alice Chen', score: 92, date: '2025-11-10', position: 'Frontend Engineer', overview: 'Experienced frontend engineer...', categories: ['Frontend', 'React'], image: 'https://placehold.co/400x250/E5E7EB/4B5563?text=Alice' },
+        { id: 'B002', name: 'Bob Lin', score: 78, date: '2025-11-05', position: 'Data Analyst', overview: 'Data-focused analyst...', categories: ['Data', 'Python'], image: 'https://placehold.co/400x250/E5E7EB/4B5563?text=Bob' },
+        { id: 'C003', name: 'Carol Wu', score: 85, date: '2025-11-12', position: 'Full-stack Developer', overview: 'Full-stack developer...', categories: ['Fullstack', 'Node'], image: 'https://placehold.co/400x250/E5E7EB/4B5563?text=Carol' },
+        { id: 'D004', name: 'David Ho', score: 67, date: '2025-10-28', position: 'QA Engineer', overview: 'Junior QA engineer...', categories: ['QA'], image: 'https://placehold.co/400x250/E5E7EB/4B5563?text=David' }
     ];
 
-    // Use data-driven creation when possible
-    await loadResumeCards('includes/templates/resume-card.html', '#resume-container', sample);
+    // Register the resume-card template (no immediate append)
+    await loadResumeCards('includes/templates/resume-card.html', '#resume-container', []);
+
+    // Apply default sort from settings (header.js sets window.appSettings.defaultSort like 'score-desc')
+    try {
+        if (window.appSettings && window.appSettings.defaultSort) {
+            const def = window.appSettings.defaultSort; // e.g. 'score-desc'
+            const parts = String(def).split('-');
+            if (parts.length === 2) {
+                const key = parts[0];
+                const dir = parts[1].toUpperCase();
+                const desired = `${key} ${dir}`; // e.g. 'score DESC'
+                const sortSelect = document.getElementById('sort');
+                if (sortSelect) {
+                    // set if exists
+                    const opt = Array.from(sortSelect.options).find(o => o.value.toLowerCase() === desired.toLowerCase());
+                    if (opt) sortSelect.value = opt.value;
+                }
+            }
+        }
+    } catch (e) { /* ignore */ }
+
+    if (window.resumeStore) {
+        window.resumeStore.setItems(sample);
+    } else {
+        // fallback: append directly
+        await loadResumeCards('includes/templates/resume-card.html', '#resume-container', sample);
+    }
 });
